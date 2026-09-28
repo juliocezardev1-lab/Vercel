@@ -185,7 +185,7 @@ h1 {
     display: none;
 }
 
-.panel > * {
+.panel>* {
     position: relative;
     z-index: 1;
 }
@@ -371,23 +371,49 @@ tr:hover td {
 }
 
 @keyframes float {
-    0% { transform: none; }
-    100% { transform: none; }
+    0% {
+        transform: none;
+    }
+
+    100% {
+        transform: none;
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { transform: none; opacity: 1; }
-    50% { transform: none; opacity: 1; }
+
+    0%,
+    100% {
+        transform: none;
+        opacity: 1;
+    }
+
+    50% {
+        transform: none;
+        opacity: 1;
+    }
 }
 
 @keyframes bob {
-    0%, 100% { transform: none; }
-    50% { transform: none; }
+
+    0%,
+    100% {
+        transform: none;
+    }
+
+    50% {
+        transform: none;
+    }
 }
 
 @keyframes drift {
-    0% { transform: none; }
-    100% { transform: none; }
+    0% {
+        transform: none;
+    }
+
+    100% {
+        transform: none;
+    }
 }
 
 @media (max-width: 820px) {
@@ -420,4 +446,10 @@ tr:hover td {
     button {
         width: 100%;
     }
+}
+
+.IMG {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
 }
