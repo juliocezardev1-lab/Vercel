@@ -1,0 +1,23 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "",
+  "outputDirectory": "FRONTEND",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "FRONTEND/**",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/produtos",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/produtos/:id",
+      "destination": "/api/index"
+    }
+  ]
+}

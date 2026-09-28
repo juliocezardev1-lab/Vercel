@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de produtos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="ambient ambient-1"></div>
+    <div class="ambient ambient-2"></div>
+    <div class="ambient ambient-3"></div>
+
+    <div class="app-shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Painel premium</span>
+                <h1>Cadastro de Produtos</h1>
+                <p>Gerencie seu estoque com estilo, brilho e energia total do futuro.</p>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <span class="stat-label">Fluxo</span>
+                    <strong>99%</strong>
+                </div>
+                <div class="stat-card accent">
+                    <span class="stat-label">Inventário</span>
+                    <strong>On</strong>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="panel form-panel">
+                <div class="panel-header">
+                    <h2>Novo item</h2>
+                    <span class="pulse-dot"></span>
+                </div>
+
+                <form id="produto-form">
+                    <div class="field-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" required id="nome" placeholder="Ex: Mouse gamer">
+                    </div>
+
+                    <div class="field-group">
+                        <label for="preco">Preço</label>
+                        <input type="number" required id="preco" min="0.01" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="field-group">
+                        <label for="quantidade">Quantidade</label>
+                        <input type="number" required id="quantidade" min="1" step="1" placeholder="1">
+                    </div>
+
+                    <button type="submit" class="primary-btn">Adicionar Produto</button>
+                </form>
+            </section>
+
+            <section class="panel table-panel">
+                <div class="table-header">
+                    <h2>Estoque</h2>
+                    <button id="limpar-tabela" class="danger-btn">Limpar tabela</button>
+                </div>
+
+                <h3 id="total-estoque">Total em estoque: R$ 0,00</h3>
+
+                <div class="table-wrap">
+                    <table id="tabela-produtos">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Preço</th>
+                                <th>Quantidade</th>
+                                <th>Total Bruto</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
