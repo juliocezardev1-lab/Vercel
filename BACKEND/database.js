@@ -1,4 +1,6 @@
 const path = require('path');
+const fs = require('fs');
+const { rootCertificates } = require('tls');
 const { Pool } = require('pg');
 
 // Na Vercel, as credenciais vêm das variáveis de ambiente do projeto.
@@ -25,7 +27,17 @@ function obterPool() {
 
     const endereco = new URL(process.env.DATABASE_URL);
     const bancoLocal = ['localhost', '127.0.0.1', '[::1]'].includes(endereco.hostname);
-    const certificado = process.env.DATABASE_SSL_CA;
+    const bancoSupabase = endereco.hostname.endsWith('.supabase.co') ||
+        endereco.hostname.endsWith('.pooler.supabase.com');
+    let certificado = process.env.DATABASE_SSL_CA?.replace(/\\n/g, '\n');
+
+    // O Supabase usa uma CA própria, que não faz parte das raízes padrão do Node.
+    if (!certificado && bancoSupabase) {
+        certificado = [
+            ...rootCertificates,
+            fs.readFileSync(path.join(__dirname, 'certs', 'supabase-ca.crt'), 'utf8')
+        ];
+    }
 
     // Evita que parâmetros da URL sobrescrevam o certificado configurado.
     if (certificado) {
@@ -38,7 +50,7 @@ function obterPool() {
         connectionString: endereco.toString(),
         ssl: bancoLocal ? false : {
             rejectUnauthorized: true,
-            ...(certificado ? { ca: certificado.replace(/\\n/g, '\n') } : {})
+            ...(certificado ? { ca: certificado } : {})
         },
         max: 1,
         connectionTimeoutMillis: 10000,

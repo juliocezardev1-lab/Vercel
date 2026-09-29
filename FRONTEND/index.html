@@ -3,89 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#90ef79">
     <title>Cadastro de produtos</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div class="ambient ambient-1"></div>
-    <div class="ambient ambient-2"></div>
-    <div class="ambient ambient-3"></div>
-
     <div class="app-shell">
-        <img src="IMG/AOLOKO.jpeg" alt="img" class="IMG">
+        <div class="window-bar">
+            <span class="window-title"><span aria-hidden="true">✦</span> ESTOQUE.EXE</span>
+            <span class="window-caption">ORGANIZAÇÃO À MODA ANTIGA</span>
+            <span class="window-controls" aria-hidden="true"><i>–</i><i>□</i><i>×</i></span>
+        </div>
         <header class="hero">
             <div class="hero-copy">
-                <span class="eyebrow">Painel premium</span>
-                <h1>Cadastro de Produtos</h1>
-                <p>Gerencie seu estoque com estilo, brilho e energia total do futuro.</p>
-            </div>
-
-            <div class="stats-panel">
-                <div class="stat-card">
-                    <span class="stat-label">Fluxo</span>
-                    <strong>99%</strong>
+                <span class="eyebrow">O caos que lute.</span>
+                <h1>Cadastro de<br><span>produtos.</span></h1>
+                <p>Seu estoque em ordem. Seu estilo fora do padrão.</p>
+                <div class="stats-panel" aria-label="Resumo do estoque">
+                    <div class="stat-card">
+                        <strong id="total-produtos">—</strong>
+                        <span class="stat-label">Produtos<br>cadastrados</span>
+                    </div>
+                    <div class="stat-card accent">
+                        <strong id="total-unidades">—</strong>
+                        <span class="stat-label">Unidades<br>em estoque</span>
+                    </div>
                 </div>
-                <div class="stat-card accent">
-                    <span class="stat-label">Inventário</span>
-                    <strong>On</strong>
-                </div>
             </div>
+            <figure class="photo-sticker">
+                <span class="speech-bubble" aria-hidden="true">AÔ LOKO!</span>
+                <img src="IMG/AOLOKO.jpeg" alt="Retrato que ilustra o painel de estoque" width="1200" height="1599" class="IMG">
+                <figcaption>De olho no estoque.</figcaption>
+                <span class="sticker-star" aria-hidden="true">✦</span>
+            </figure>
         </header>
-
         <main class="dashboard">
-            <section class="panel form-panel">
+            <p id="feedback" class="feedback" role="status" aria-live="polite" hidden></p>
+            <section class="panel form-panel" aria-labelledby="titulo-novo-item">
                 <div class="panel-header">
-                    <h2>Novo item</h2>
-                    <span class="pulse-dot"></span>
+                    <span class="panel-number" aria-hidden="true">01</span>
+                    <h2 id="titulo-novo-item">Novo item</h2>
+                    <span class="panel-spark" aria-hidden="true">✳</span>
                 </div>
-
-                <form id="produto-form">
-                    <div class="field-group">
-                        <label for="nome">Nome</label>
-                        <input type="text" required id="nome" placeholder="Ex: Mouse gamer">
-                    </div>
-
-                    <div class="field-group">
-                        <label for="preco">Preço</label>
-                        <input type="number" required id="preco" min="0.01" step="0.01" placeholder="0.00">
-                    </div>
-
-                    <div class="field-group">
-                        <label for="quantidade">Quantidade</label>
-                        <input type="number" required id="quantidade" min="1" step="1" placeholder="1">
-                    </div>
-
-                    <button type="submit" class="primary-btn">Adicionar Produto</button>
-                </form>
+                <div class="panel-content">
+                    <p class="panel-intro">Preencheu, adicionou. Tá na mão.</p>
+                    <form id="produto-form">
+                        <div class="field-group">
+                            <label for="nome">Nome do produto</label>
+                            <input type="text" required id="nome" placeholder="Ex.: Mouse gamer" autocomplete="off">
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label for="preco">Preço unitário</label>
+                                <div class="price-field">
+                                    <span aria-hidden="true">R$</span>
+                                    <input type="number" required id="preco" min="0.01" step="0.01" inputmode="decimal" placeholder="0,00">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="quantidade">Quantidade</label>
+                                <input type="number" required id="quantidade" min="1" step="1" inputmode="numeric" placeholder="1">
+                            </div>
+                        </div>
+                        <button type="submit" class="primary-btn"><span aria-hidden="true">+</span> Adicionar produto</button>
+                    </form>
+                    <p class="form-note"><span aria-hidden="true">↳</span> Uma coisa a menos fora do lugar.</p>
+                </div>
             </section>
-
-            <section class="panel table-panel">
-                <div class="table-header">
-                    <h2>Estoque</h2>
-                    <button id="limpar-tabela" class="danger-btn">Limpar tabela</button>
+            <section class="panel table-panel" aria-labelledby="titulo-estoque">
+                <div class="panel-header table-header">
+                    <span class="panel-number" aria-hidden="true">02</span>
+                    <h2 id="titulo-estoque">Seu estoque</h2>
+                    <button id="limpar-tabela" class="danger-btn" type="button" disabled>Limpar tabela</button>
                 </div>
-
-                <h3 id="total-estoque">Total em estoque: R$ 0,00</h3>
-
-                <div class="table-wrap">
-                    <table id="tabela-produtos">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Preço</th>
-                                <th>Quantidade</th>
-                                <th>Total Bruto</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <div class="panel-content">
+                    <div class="inventory-summary">
+                        <span class="summary-label">Tudo na conta!</span>
+                        <h3 id="total-estoque">Total em estoque: —</h3>
+                    </div>
+                    <div class="table-wrap" tabindex="0" role="region" aria-label="Lista de produtos; role horizontalmente se necessário">
+                        <table id="tabela-produtos">
+                            <thead><tr>
+                                <th scope="col">Produto</th>
+                                <th scope="col">Preço</th>
+                                <th scope="col">Qtd.</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Ação</th>
+                            </tr></thead>
+                            <tbody><tr class="state-row"><td colspan="5">Carregando seus produtos…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <p class="scroll-note">↔ Deslize a tabela para ver todas as colunas.</p>
+                    <p class="table-note">Preço × quantidade = total de cada produto.</p>
                 </div>
             </section>
         </main>
+        <footer class="app-footer">
+            <span id="estado-estoque" class="stock-status" data-status="loading">Carregando estoque…</span>
+            <span>FEITO PARA ORGANIZAR. COM PERSONALIDADE. <span aria-hidden="true">✦</span></span>
+        </footer>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
