@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#90ef79">
+    <title>Login · Tech Take</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-shell">
+        <div class="window-bar auth-window-bar">
+            <span class="window-title"><span aria-hidden="true">✦</span> ACESSO.EXE</span>
+            <span class="window-caption">SEGURANÇA EM PRIMEIRO LUGAR</span>
+            <span class="window-controls" aria-hidden="true"><i>–</i><i>□</i><i>×</i></span>
+        </div>
+
+        <main class="auth-main">
+            <section class="panel auth-panel" aria-labelledby="login-title">
+                <div class="panel-header auth-header">
+                    <span class="panel-number" aria-hidden="true">01</span>
+                    <h2 id="login-title">Entrar</h2>
+                    <span class="panel-spark" aria-hidden="true">✳</span>
+                </div>
+                <div class="panel-content auth-content">
+                    <p class="panel-intro">Acesse o painel para controlar o estoque com segurança.</p>
+
+                    <form id="login-form" novalidate>
+                        <div class="field-group">
+                            <label for="identifier">E-mail ou usuário</label>
+                            <input id="identifier" name="identifier" type="text" autocomplete="username" required aria-describedby="login-error" placeholder="seu@email.com ou usuario">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="password">Senha</label>
+                            <div class="password-wrap">
+                                <input id="password" name="password" type="password" autocomplete="current-password" required aria-describedby="login-error" placeholder="Sua senha">
+                                <button type="button" class="password-toggle" id="toggle-password" aria-label="Mostrar senha">Mostrar</button>
+                            </div>
+                        </div>
+
+                        <div id="turnstile-container" class="turnstile-area" aria-live="polite"></div>
+
+                        <button type="submit" class="primary-btn auth-submit" id="login-button">
+                            <span aria-hidden="true">→</span> Entrar
+                        </button>
+
+                        <p id="login-error" class="form-message" role="alert" aria-live="assertive"></p>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.TURNSTILE_SITE_KEY = "";
+    </script>
+    <script src="login.js"></script>
+</body>
+</html>
