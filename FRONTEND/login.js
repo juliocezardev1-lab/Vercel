@@ -16,7 +16,16 @@ function setError(message) {
 function setLoading(isLoading) {
   loginButton.disabled = isLoading;
   loginButton.setAttribute('aria-busy', String(isLoading));
-  loginButton.innerHTML = isLoading ? '<span aria-hidden="true">⏳</span> Entrando...' : '<span aria-hidden="true">→</span> Entrar';
+  loginButton.innerHTML = isLoading
+    ? '<span aria-hidden="true">⏳</span> Entrando...'
+    : '<span aria-hidden="true">→</span> Entrar';
+}
+
+function resetTurnstile() {
+  turnstileToken = '';
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.reset(turnstileWidgetId);
+  }
 }
 
 function togglePasswordVisibility() {
@@ -27,36 +36,59 @@ function togglePasswordVisibility() {
   passwordInput.focus();
 }
 
-toggleButton.addEventListener('click', togglePasswordVisibility);
+function renderTurnstile(siteKey) {
+  turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+    sitekey: siteKey,
+    action: 'login',
+    callback: (token) => {
+      turnstileToken = token;
+      setError('');
+    },
+    'expired-callback': resetTurnstile,
+    'timeout-callback': resetTurnstile,
+    'error-callback': () => {
+      // Avoid calling reset() from an error callback: persistent provider errors
+      // can otherwise produce a repeated error/reset cycle.
+      turnstileToken = '';
+      setError('Não foi possível carregar a verificação. Atualize a página e tente novamente.');
+    }
+  });
+}
 
-function ensureTurnstile() {
-  const siteKey = window.TURNSTILE_SITE_KEY || '';
+async function initializeTurnstile() {
+  try {
+    const response = await fetch('/api/config', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('CAPTCHA não configurado. Contate o administrador.');
+    }
+    const config = await response.json();
+    if (!config.turnstileSiteKey) {
+      throw new Error('CAPTCHA não configurado. Contate o administrador.');
+    }
 
-  if (!siteKey) {
-    setError('CAPTCHA não configurado. Contate o administrador.');
-    return null;
-  }
-
-  if (window.turnstile && !turnstileWidgetId) {
-    turnstileWidgetId = window.turnstile.render(turnstileContainer, {
-      sitekey: siteKey,
-      callback: (token) => {
-        turnstileToken = token;
-      },
-      'expired-callback': () => {
-        turnstileToken = '';
-      },
-      'error-callback': () => {
-        turnstileToken = '';
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      try {
+        renderTurnstile(config.turnstileSiteKey);
+      } catch {
+        setError('Não foi possível carregar a verificação. Atualize a página e tente novamente.');
       }
-    });
+    };
+    script.onerror = () => {
+      setError('Não foi possível carregar a verificação. Atualize a página e tente novamente.');
+    };
+    document.head.appendChild(script);
+  } catch (error) {
+    setError(error.message || 'Login temporariamente indisponível.');
   }
-
-  return turnstileWidgetId;
 }
 
 async function submitLogin(event) {
   event.preventDefault();
+  if (loginButton.disabled) return;
   setError('');
 
   const identifier = identifierInput.value.trim();
@@ -69,55 +101,34 @@ async function submitLogin(event) {
   }
 
   if (!turnstileToken) {
-    setError('Confirme o CAPTCHA antes de continuar.');
-    ensureTurnstile();
+    setError('Conclua a verificação antes de continuar.');
     return;
   }
 
   setLoading(true);
-
   try {
     const response = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, password, cfTurnstileToken: turnstileToken }),
-      credentials: 'same-origin'
+      credentials: 'same-origin',
+      cache: 'no-store'
     });
-
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      if (response.status === 429) {
-        throw new Error(data.error || 'Muitas tentativas. Tente novamente em alguns minutos.');
-      }
-
-      throw new Error(data.error || 'Credenciais inválidas.');
+      throw new Error(data.error || 'Não foi possível entrar agora.');
     }
 
-    window.location.href = data.redirect || '/';
+    window.location.assign('/');
   } catch (error) {
     setError(error.message || 'Não foi possível entrar agora.');
-    turnstileToken = '';
-    if (window.turnstile && turnstileWidgetId !== null) {
-      window.turnstile.reset(turnstileWidgetId);
-    }
+    resetTurnstile();
   } finally {
     setLoading(false);
   }
 }
 
+toggleButton.addEventListener('click', togglePasswordVisibility);
 form.addEventListener('submit', submitLogin);
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    ensureTurnstile();
-  });
-} else {
-  ensureTurnstile();
-}
-
-const script = document.createElement('script');
-script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-script.async = true;
-script.defer = true;
-document.head.appendChild(script);
+initializeTurnstile();

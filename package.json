@@ -10,6 +10,8 @@
   },
   "scripts": {
     "start": "node BACKEND/server.js",
-    "dev": "node --watch BACKEND/server.js"
+    "dev": "node --watch BACKEND/server.js",
+    "test": "npm --workspace backend test",
+    "create-admin": "npm --workspace backend run create-admin"
   }
 }

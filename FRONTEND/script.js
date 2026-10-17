@@ -24,6 +24,7 @@ const numero = new Intl.NumberFormat('pt-BR');
 const formulario = document.getElementById('produto-form');
 const tabela = document.querySelector('#tabela-produtos tbody');
 const botaoLimpar = document.getElementById('limpar-tabela');
+const botaoLogout = document.getElementById('logout-button');
 const feedback = document.getElementById('feedback');
 const estadoEstoque = document.getElementById('estado-estoque');
 
@@ -190,4 +191,41 @@ botaoLimpar.addEventListener('click', async function () {
     }
 });
 
-renderizarTabela();
+botaoLogout.addEventListener('click', async function () {
+    botaoLogout.disabled = true;
+    try {
+        const resposta = await fetch('/api/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+            cache: 'no-store'
+        });
+        if (!resposta.ok) throw new Error('Não foi possível encerrar a sessão.');
+        window.location.replace('/login');
+    } catch (erro) {
+        botaoLogout.disabled = false;
+        mostrarMensagem(erro.message, 'erro');
+    }
+});
+
+async function iniciarPainel() {
+    try {
+        const resposta = await fetch('/api/session', {
+            credentials: 'same-origin',
+            cache: 'no-store'
+        });
+        if (resposta.status === 401) {
+            window.location.replace('/login');
+            return;
+        }
+        if (!resposta.ok) throw new Error('Não foi possível validar a sessão.');
+        await renderizarTabela();
+    } catch (erro) {
+        mostrarEstadoTabela('Painel temporariamente indisponível.', erro.message);
+        estadoEstoque.textContent = 'Falha ao validar a sessão';
+        estadoEstoque.dataset.status = 'erro';
+        botaoLimpar.disabled = true;
+        console.error('Erro ao iniciar o painel:', erro.message);
+    }
+}
+
+iniciarPainel();

@@ -14,7 +14,7 @@ function isValidIdentifier(value = '') {
 
 function isValidPassword(value = '') {
     const password = String(value);
-    return password.length >= 8 && password.length <= 128;
+    return password.length >= 12 && Buffer.byteLength(password, 'utf8') <= 72;
 }
 
 function generateToken(bytes = 32) {
@@ -37,8 +37,15 @@ async function verifyPassword(password, passwordHash) {
     return bcrypt.compare(password, passwordHash);
 }
 
-async function verifyTurnstile({ secretKey, responseToken, remoteIp, fetchImpl = globalThis.fetch }) {
-    if (!secretKey || !responseToken) {
+async function verifyTurnstile({
+    secretKey,
+    responseToken,
+    remoteIp,
+    expectedHostname,
+    expectedAction = 'login',
+    fetchImpl = globalThis.fetch
+}) {
+    if (!secretKey || !responseToken || !expectedHostname) {
         return { success: false, error: 'captcha_missing' };
     }
 
@@ -50,7 +57,8 @@ async function verifyTurnstile({ secretKey, responseToken, remoteIp, fetchImpl =
                 secret: secretKey,
                 response: responseToken,
                 remoteip: remoteIp || undefined
-            })
+            }),
+            signal: AbortSignal.timeout(5000)
         });
 
         if (!response.ok) {
@@ -58,11 +66,29 @@ async function verifyTurnstile({ secretKey, responseToken, remoteIp, fetchImpl =
         }
 
         const payload = await response.json();
+        if (!payload || typeof payload !== 'object') {
+            return { success: false, error: 'captcha_provider_unavailable' };
+        }
+
+        if (!payload.success) {
+            return {
+                success: false,
+                error: (payload['error-codes'] && payload['error-codes'][0]) || 'captcha_invalid'
+            };
+        }
+
+        if (
+            typeof payload.hostname !== 'string' ||
+            payload.hostname.toLowerCase() !== expectedHostname.toLowerCase() ||
+            payload.action !== expectedAction
+        ) {
+            return { success: false, error: 'captcha_invalid' };
+        }
+
         return {
-            success: Boolean(payload.success),
-            error: payload.success ? undefined : (payload['error-codes'] && payload['error-codes'][0]) || 'captcha_invalid'
+            success: true
         };
-    } catch (erro) {
+    } catch {
         return { success: false, error: 'captcha_provider_unavailable' };
     }
 }

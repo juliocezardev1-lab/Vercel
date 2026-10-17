@@ -4,7 +4,8 @@
   "description": "API Rest para gerenciamento de produtos",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error no teste specified\" && exit 1",
+    "test": "node --test",
+    "create-admin": "node create-admin.js",
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
