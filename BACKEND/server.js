@@ -204,6 +204,7 @@ app.get(['/login', '/login/'], (req, res) => {
 
 app.get('/', serveDashboard);
 app.get('/index.html', serveDashboard);
+app.get('/api/index', serveDashboard);
 
 app.get('/api/config', (req, res) => {
     const siteKey = process.env.TURNSTILE_SITE_KEY;

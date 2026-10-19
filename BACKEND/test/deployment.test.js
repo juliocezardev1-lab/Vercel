@@ -13,8 +13,19 @@ test('Vercel routes friendly login URLs to the HTML frontend', () => {
     assert.equal(routes.get('/login/'), '/login.html');
     assert.equal(routes.get('/'), '/api/index');
     assert.equal(routes.get('/index.html'), '/api/index');
-    assert.equal(config.outputDirectory, 'FRONTEND');
+    assert.equal(routes.get('/produtos'), '/api/index');
+    assert.equal(routes.get('/produtos/:id'), '/api/index');
+    assert.equal(config.buildCommand, 'npm run build:static');
+    assert.equal(config.outputDirectory, 'dist');
     assert.equal(fs.existsSync(path.join(root, 'FRONTEND/login.html')), true);
+
+    const buildScript = read('scripts/build-static.js');
+    const publicFiles = buildScript.match(/const publicos = \[([\s\S]*?)\];/)?.[1];
+    assert.ok(publicFiles);
+    for (const asset of ['login.html', 'login.js', 'script.js', 'style.css', 'IMG', 'fonts']) {
+        assert.match(publicFiles, new RegExp(`'${asset}'`));
+    }
+    assert.doesNotMatch(publicFiles, /'index\.html'/);
 });
 
 test('CSP retains Cloudflare Turnstile and secure default restrictions', () => {

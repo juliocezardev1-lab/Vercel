@@ -215,6 +215,9 @@ test('login, protected inventory APIs, session expiry, logout, CSRF and rate lim
     assert.equal(dashboardRedirect.headers.location, '/login');
     const directDashboardRedirect = await request('/index.html');
     assert.equal(directDashboardRedirect.status, 303);
+    const functionDashboardRedirect = await request('/api/index');
+    assert.equal(functionDashboardRedirect.status, 303);
+    assert.equal(functionDashboardRedirect.headers.location, '/login');
     const loginPage = await request('/login.html');
     assert.equal(loginPage.status, 200);
     const cleanLoginPage = await request('/login');
