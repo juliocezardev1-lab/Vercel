@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm ci",
-  "buildCommand": "",
-  "outputDirectory": "FRONTEND",
+  "buildCommand": "npm run build:static",
+  "outputDirectory": "dist",
   "functions": {
     "api/*.js": {
       "includeFiles": "FRONTEND/**",

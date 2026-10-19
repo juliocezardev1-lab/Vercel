@@ -12,6 +12,7 @@
     "start": "node BACKEND/server.js",
     "dev": "node --watch BACKEND/server.js",
     "test": "npm --workspace backend test",
-    "create-admin": "npm --workspace backend run create-admin"
+    "create-admin": "npm --workspace backend run create-admin",
+    "build:static": "node scripts/build-static.js"
   }
 }
